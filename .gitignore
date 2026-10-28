@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars*
+.env*
+*.tsbuildinfo
+backups/
+
+!.dev.vars.example
+worker-configuration.d.ts
+
+wrangler.deploy.jsonc

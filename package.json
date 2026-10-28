@@ -1,0 +1,32 @@
+{
+  "name": "fooswins",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build": "vite build && node scripts/build-worker.mjs",
+    "dev": "vite --host 0.0.0.0",
+    "preview": "wrangler dev",
+    "deploy": "npm run build && npm run publish",
+    "test": "node tests/integration.mjs",
+    "db:migrate": "node scripts/configure.mjs && wrangler d1 migrations apply fooswins --remote --config wrangler.deploy.jsonc",
+    "types": "wrangler types",
+    "publish": "node scripts/configure.mjs && wrangler deploy --config wrangler.deploy.jsonc"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "lucide-react": "1.31.0"
+  },
+  "devDependencies": {
+    "vite": "8.0.13",
+    "@vitejs/plugin-react": "6.0.2",
+    "typescript": "5.9.3",
+    "wrangler": "4.92.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
+  }
+}

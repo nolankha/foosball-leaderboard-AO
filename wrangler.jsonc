@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "fooswins",
+  "main": "dist/worker.js",
+  "compatibility_date": "2026-10-27",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "fooswins",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "secrets": {
+    "required": [
+      "ADMIN_PASSCODE"
+    ]
+  }
+}
