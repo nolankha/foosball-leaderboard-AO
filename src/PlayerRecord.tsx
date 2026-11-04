@@ -9,7 +9,7 @@ export function PlayerRecord({ids,matches,players,range}:{ids:string[],matches:M
   const file=record(ids,matches);
   const formats=team?['doubles']:['singles','doubles'];
   return <div className="player-file">
-    <div className="eyebrow">PLAYER FILE / MATCH LOG <span className="file-period">{range==='today'?'TODAY':'ALL TIME'}</span></div>
+    <div className="eyebrow">PLAYER FILE / MATCH LOG <span className="file-period">{range==='today'?'TODAY':range==='week'?'THIS WEEK':'ALL TIME'}</span></div>
     <h2>{label(ids)}</h2>
     <p className="file-description">{team?'Doubles team records, opponents, and every game played together.':'Singles and doubles are tracked separately. Rates appear after 10 matches in that format.'}</p>
     <section className={'file-rates '+(team?'team-rates':'')} aria-label={team?'Doubles team win rate':'Individual win rates'}>

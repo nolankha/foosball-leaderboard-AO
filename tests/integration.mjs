@@ -36,5 +36,29 @@ await post({winners:['change Jay to Chadd'],passcode:process.env.TEST_ADMIN_SECR
 for(let i=0;i<5;i++)await post({winners:['delete Jay'],passcode:'incorrect'},403,999);await post({winners:['delete Jay'],passcode:process.env.TEST_ADMIN_SECRET},429,999);
 await post({winners:['delete Jay'],passcode:process.env.TEST_ADMIN_SECRET},200);d=await get();assert(!d.players.some(p=>p.id===justin));assert(!d.matches.some(m=>[m.w1,m.w2,m.l1,m.l2].includes(justin)));assert.equal(d.matches.length,1);
 assert.equal(game.baseKey('  ＪＵＳＴＩＮ   ＺＨＵ '),game.baseKey('JZ'));assert.notEqual(game.baseKey('John'),game.baseKey('Jon'));
+// Each win in a batch has its own record, and invalid counts save nothing.
+const beforeBatch = (await get()).matches.length;
+for (const count of [0, 21, 1.5, '3', null]) {
+  await post(single('Amy','Bob',{count}),400);
+}
+assert.equal((await get()).matches.length,beforeBatch);
+await post(single('Amy','Bob',{count:3}));
+await post({format:'doubles',winners:['Amy','Bob'],losers:['Chris','Drew'],count:3,winnerScore:10,loserScore:8});
+d=await get();
+assert.equal(d.matches.length,beforeBatch+6);
+const amy=d.players.find(p=>p.name==='Amy').id;
+const amyGames=game.record([amy],d.matches).history;
+assert.equal(amyGames.filter(m=>m.format==='singles').length,3);
+assert.equal(amyGames.filter(m=>m.format==='doubles'&&m.winner_score===10&&m.loser_score===8).length,3);
+assert.equal(new Set(amyGames.map(m=>m.id)).size,6);
+const week=game.periodBounds('week',new Date(2026,10,1,12));
+assert.equal(week.start,+new Date(2026,9,26));
+assert.equal(week.end,+new Date(2026,10,2));
+const boundaryGames=amyGames.slice(0,4);
+for(let i=0;i<4;i++)sqlite.prepare('UPDATE matches SET created_at=? WHERE id=?').run(
+  [week.start-1,week.start,week.end-1,week.end][i],boundaryGames[i].id);
+const weekly=await get(`?start=${week.start}&end=${week.end}`);
+assert.deepEqual(weekly.matches.filter(m=>boundaryGames.some(g=>g.id===m.id)).map(m=>m.id),
+  [boundaryGames[2].id,boundaryGames[1].id]);
 console.log('PASS: validation, Unicode aliases, singles/doubles standings, rate threshold, records, day boundaries, SQLite persistence, rename/history, deletion, passcode protection, and rate limits.');
 sqlite.close();rmSync(dir,{recursive:true});
